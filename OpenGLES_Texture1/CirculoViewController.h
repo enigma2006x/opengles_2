@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  CirculoViewController.h
 //  OpenGLES_Texture1
 //
 //  Created by Antonio Trejo on 2/12/13.
@@ -7,13 +7,12 @@
 //
 
 #import <GLKit/GLKit.h>
-
+//http://en.wikipedia.org/wiki/Unit_circle
 @class AGLKVertexAttribArrayBuffer;
 
-@interface ViewController : GLKViewController
+@interface CirculoViewController : GLKViewController
 
 @property (nonatomic, strong) GLKBaseEffect *baseEffect;
 @property (nonatomic, strong) AGLKVertexAttribArrayBuffer *vertexBuffer;
-
 
 @end

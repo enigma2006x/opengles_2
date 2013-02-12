@@ -1,32 +1,34 @@
 //
-//  ViewController.m
+//  RomboViewController.m
 //  OpenGLES_Texture1
 //
 //  Created by Antonio Trejo on 2/12/13.
 //  Copyright (c) 2013 Antonio Trejo. All rights reserved.
 //
 
-#import "ViewController.h"
+#import "RomboViewController.h"
 #import "AGLKVertexAttribArrayBuffer.h"
 #import "AGLKContext.h"
 
 typedef struct{
     GLKVector3 positionCoords;
     GLKVector2 textureCoords;
-}SceneVertex;
+} SceneVertex;
 
-static const SceneVertex vertices[] =
-{
-    {{-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f}},
-    {{ 0.5f, -0.5f, 0.0f}, {1.0f, 0.0f}},
-    {{-0.5f,  0.5f, 0.0f}, {0.0f, 1.0f}}
+static const SceneVertex vertices[] = {
+    {{-0.5, 0.0, 0.0}, {0.0, 0.0}},
+    {{ 0.0,-0.5, 0.0}, {1.0, 0.0}},
+    {{ 0.5, 0.0, 0.0}, {0.0, 0.0}},
+    {{ 0.5, 0.0, 0.0}, {0.0, 0.0}},
+    {{ 0.0, 0.5, 0.0}, {0.0, 1.0}},
+    {{-0.5, 0.0, 0.0}, {0.0, 0.0}}
 };
 
-@interface ViewController ()
+@interface RomboViewController ()
 
 @end
 
-@implementation ViewController
+@implementation RomboViewController
 
 @synthesize baseEffect;
 @synthesize vertexBuffer;
@@ -34,16 +36,13 @@ static const SceneVertex vertices[] =
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+
     GLKView *view = (GLKView *) self.view;
-    NSAssert([view isKindOfClass:[GLKView class]], @"View controller's view is not a GLKView");
+    NSAssert([view isKindOfClass:[GLKView class]], @"View controller's view is not a GLView");
     
-    //Generar context OpenGL ES 2.0
     view.context = [[AGLKContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
     
-    //habilitar el context
     [AGLKContext setCurrentContext:view.context];
-    
     
     self.baseEffect = [[GLKBaseEffect alloc] init];
     self.baseEffect.useConstantColor = GL_TRUE;
@@ -64,10 +63,13 @@ static const SceneVertex vertices[] =
                          bytes:vertices
                          usage:GL_STATIC_DRAW];
     
+    
+    
     CGImageRef imageRef = [UIImage imageNamed:@"texture.jpg"].CGImage;
     
-    GLKTextureInfo *textureInfo = [GLKTextureLoader textureWithCGImage:imageRef options:nil error:NULL];
-
+    GLKTextureInfo *textureInfo = [GLKTextureLoader textureWithCGImage:imageRef
+                                                               options:nil
+                                                                 error:NULL];
     
     self.baseEffect.texture2d0.name = textureInfo.name;
     self.baseEffect.texture2d0.target = textureInfo.target;
@@ -76,11 +78,10 @@ static const SceneVertex vertices[] =
 }
 
 - (void) glkView:(GLKView *)view drawInRect:(CGRect)rect{
-    
     [self.baseEffect prepareToDraw];
     
-    [(AGLKContext *)view.context clear:GL_COLOR_BUFFER_BIT];
-   
+    [(AGLKContext *) view.context clear:GL_COLOR_BUFFER_BIT];
+    
     [self.vertexBuffer prepareToDrawWithAttrib:GLKVertexAttribPosition
                            numberOfCoordinates:3
                                   attribOffset:offsetof(SceneVertex, positionCoords)
@@ -91,25 +92,9 @@ static const SceneVertex vertices[] =
                                   attribOffset:offsetof(SceneVertex, textureCoords)
                                   shouldEnable:YES];
     
-    
     [self.vertexBuffer drawArrayWithMode:GL_TRIANGLES
                         startVertexIndex:0
-                        numberOfVertices:3];
-    
-    
-}
-
-- (void) viewDidUnload{
-    [super viewDidUnload];
-    
-    GLKView *view = (GLKView *) self.view;
-    
-    [AGLKContext setCurrentContext:view.context];
-    
-    self.vertexBuffer = nil;
-    
-    ((GLKView *) self.view).context = nil;
-    [EAGLContext setCurrentContext:nil];
+                        numberOfVertices:sizeof(vertices) / sizeof(SceneVertex)];
     
 }
 
